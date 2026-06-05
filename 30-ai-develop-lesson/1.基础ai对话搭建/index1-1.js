@@ -1,3 +1,4 @@
+// 大模型接口
 import axios from "axios"
 
 axios.post("https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",{

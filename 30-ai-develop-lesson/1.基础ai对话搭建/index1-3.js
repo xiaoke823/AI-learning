@@ -1,4 +1,4 @@
-//搭建服务部分
+// 提示词优化
 //引入express-一个非常简单的node服务库
 import express from 'express'
 //cors-专门解决跨域问题的
