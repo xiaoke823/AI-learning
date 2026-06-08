@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@crazydos/vue-markdown": "^1.1.4",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "axios": "^1.17.0",
     "highlight.js": "^11.11.1",
     "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1",
-    "vue": "^3.5.29"
+    "vue": "^3.5.29",
+    "vue-router": "^5.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.4",

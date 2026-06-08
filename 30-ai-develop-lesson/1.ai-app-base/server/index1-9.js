@@ -10,6 +10,8 @@ import fs from 'fs'
 import {summaryMessage,readConversation,writeConversation,summaryTitle} from './utils.js'
 //创建了一个express服务对象
 const app = express();
+//设置解析请求体，这样才能拿到req.body
+app.use(express.json())
 
 //设置跨域
 app.use(cors())
@@ -30,8 +32,14 @@ const openai = new OpenAI(
     }
 );
 //到时候请求-localhost:3000/llm?keyword="用户输入的问题" 
-app.get("/llm", async (req, res) => {
-    const { keyword, userId, convertId } = req.query;
+app.post("/llm", async (req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    });
+    console.log(req.body)
+    const { keyword, userId, convertId } = req.body;
     const conversationObj = readConversation();
     const singleConvertList = conversationObj[userId][convertId].list;
     const queryObj = {
@@ -57,15 +65,34 @@ app.get("/llm", async (req, res) => {
                 content: systemString
             },
             ...singleConvertList
-        ]
+        ],
+        stream:true
     })
+    // let chunkList = []
+    let resObj  = {
+        role:'assistant',
+        id:'',
+        content:''
+    }
+    for await (let chunk of llmres) {
+        const delta = chunk.choices[0].delta
+        
+        resObj.id = chunk.id
+        resObj.content += delta.content
+        res.write(`data:${JSON.stringify(delta)}\n\n`)
+        // chunkList.push(chunk)
+    }
+    // for of 结束了才会执行到下一行
+    // fs.writeFileSync('./chunkList.json',JSON.stringify(chunkList))
     //每次回答，存到singleConvertList，保存上下文
-    singleConvertList.push(llmres.choices[0].message);
+    // singleConvertList.push(llmres.choices[0].message);
+    singleConvertList.push(resObj)
     writeConversation(conversationObj)
-    res.json({
-        success: true,
-        data: llmres.choices[0].message
-    });
+    // res.json({
+    //     success: true,
+    //     data: llmres.choices[0].message
+    // });
+    res.write(`data:${JSON.stringify({done:true})}\n\n`)
 });
 app.get("/conversation/create", async (req, res) => {
     const userId = req.query.userId;
@@ -160,5 +187,27 @@ app.get("/conversation/delete", async (req, res) => {
         message:'删除成功'
     })
 });
+
+// sse流失传输，关键修改头：'text/event-stream;'keep-alive'
+// app.get("/ssetest", async (req, res) => {
+//     res.writeHead(200, {
+//         'Content-Type': 'text/event-stream; charset=utf-8',
+//         'Cache-Control': 'no-cache',
+//         'Connection': 'keep-alive',
+//     });
+//     const arr = ['你', '好', 'AI', '你', '能', '做什么']
+//     let i = 0;
+//     const timer = setInterval(() => {
+//         if (i < arr.length) {
+//             res.write(`data: ${JSON.stringify(arr[i])}\n\n`,);
+//             i++;
+//         } else {
+//             console.log(123123)
+//             clearInterval(timer)
+//             res.write(`data: ${JSON.stringify({ done: true })}\n\n`,);
+//             res.end();
+//         }
+//     }, 1000)
+// })
 //把服务开启来了开在了3000端口
 app.listen(3000)
