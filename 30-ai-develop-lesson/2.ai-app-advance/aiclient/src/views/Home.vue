@@ -3,6 +3,7 @@ import { nextTick, onMounted, ref, watch } from 'vue';
 import MarkDown from '../components/MarkDown.vue';
 import { createConversation, getConversation, requestLLM } from '../api';
 import { useRoute, useRouter } from 'vue-router';
+import WmCard from '@/components/wmCard.vue';
 
 const route = useRoute()
 const router = useRouter();
@@ -11,21 +12,27 @@ const inputvalue = ref("")
 const convertList = ref([]);
 const isThinking = ref(false);
 const test = ref("");
-function sendToLLM() {
+function sendToLLM(word) {
+    console.log(word)
     isThinking.value = true;
     const _convertList = [...convertList.value];
     _convertList.push({
         role: "user",
-        content: inputvalue.value
+        content: word
     })
     convertList.value = _convertList;
 
-    requestLLM(inputvalue.value, '001', route.query.convertId, (event) => {
+    requestLLM(word, '001', route.query.convertId, (event) => {
 
         const assistantObj = JSON.parse(event.data)
+        console.log('assistantObj',assistantObj)
         //空字符有id-=>你-》找到同id的对象替换-》你好-》找到同id的对象替换
         const _convertList = [...convertList.value];
-        const convertIndex = _convertList.findIndex(item => item.id === assistantObj.id);
+        const convertIndex = _convertList.findIndex(item => {
+            if(item.id&&assistantObj.id&&item.id === assistantObj.id){
+                return true
+            }
+        });
         if (convertIndex !== -1) {
             _convertList[convertIndex] = assistantObj
         } else {
@@ -79,13 +86,20 @@ watch(route, () => {
         <div class="chat-content">
             {{ test }}
             <div v-for="chatItem in convertList" class="chat-item">
-                <div v-if="chatItem.role === 'user'" class="user-content">
+                <div v-if="chatItem.role === 'user' && chatItem.content!==''" class="user-content">
                     <MarkDown :content="chatItem.content">
                     </MarkDown>
                 </div>
                 <div v-if="chatItem.role === 'assistant'" class="assistant-content">
                     <MarkDown :content="chatItem.content">
                     </MarkDown>
+                </div>
+                <div v-if="chatItem.role === 'tool' && chatItem.cardName!==''" class="assistant-content">
+                    <WmCard
+                        @cardConfirm="sendToLLM"
+                        v-if="chatItem.cardName === 'wm_card'"
+                        :kind="chatItem.arguments.kind"
+                        :cardData="chatItem.arguments.data"></WmCard>
                 </div>
             </div>
             <div v-if="isThinking" class="chat-item">
@@ -96,7 +110,7 @@ watch(route, () => {
         </div>
         <div class="input-content">
             <input type="text" v-model="inputvalue" />
-            <button @click="sendToLLM">发送</button>
+            <button @click="sendToLLM(inputvalue)">发送</button>
             <button @click="createNew">创建新对话</button>
         </div>
     </div>

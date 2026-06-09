@@ -8,16 +8,13 @@ const OpenAI = require("openai")
 const app = express();
 const fs = require("fs");
 const { toolList, toolHandleMap } = require("./tools.js")
-const { summaryMessage, readConversation, writeConversation, summaryTitle } = require("./utils.js");
+const { readConversation, writeConversation, summaryTitle, requestAI } = require("./utils.js");
 
 //设置跨域
 app.use(cors())
 //设置解析请求体，这样才能拿到req.body
 app.use(express.json())
-//同步读取
-const sytemContext = fs.readFileSync("./context2.md")
-//转文本，否则是buffer
-const systemString = sytemContext.toString();
+
 
 const openai = new OpenAI({
     baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -31,81 +28,18 @@ app.post("/llm", async (req, res) => {
         'Connection': 'keep-alive',
     });
     const { keyword, userId, convertId } = req.body;
-    const conversationObj = readConversation();
-    const singleConvertList = conversationObj[userId][convertId].list;
+
     const queryObj = {
         role: "user",
         content: keyword
     };
-    if (singleConvertList.length > 10) {
-        //算出来要截取多少条
-        //多截取一些，方便ai接口多给我们总结一下，所以设为6，每次大于10只保留6条。
-        const removeNum = singleConvertList.length - 6;
-        const removeList = singleConvertList.splice(1, removeNum)
-        const summaryRes = await summaryMessage(openai, removeList);
-        singleConvertList.splice(1, 0, summaryRes)
-    }
-    //每次提问，存到singleConvertList，保存上下文
-    singleConvertList.push(queryObj);
-    console.log(singleConvertList);
-    const llmres = await openai.chat.completions.create({
-        model: "gui-plus-2026-02-26",
-        messages: [
-            {
-                role: "system",
-                content: systemString
-            },
-            ...singleConvertList
-        ],
-        tools: toolList,
-        stream: true
+    await requestAI({
+        openai,
+        userId,
+        convertId,
+        res,
+        queryObj
     })
-    // let chunkList = []
-    let resObj = {
-        role: "assistant",
-        id: "",
-        content: ""
-    }
-
-    for await (let chunk of llmres) {
-        const delta = chunk.choices[0].delta
-        resObj.id = chunk.id
-        resObj.content += delta.content || ''
-        if (delta.tool_calls && delta.tool_calls.length > 0) {
-            //拼接tool_calls部分
-            if (resObj.tool_calls) {
-                //已经是第一个以后的chunk，走拼接
-                delta.tool_calls.forEach((chunkTool) => {
-                    const toolIndex = chunkTool.index;
-                    //根据index找到resObj，要拼接进去的对象
-                    const targetTool = resObj.tool_calls[toolIndex]
-                    if (chunkTool.function?.name) {
-                        targetTool.function.name += chunkTool.function?.name
-                    }
-                    if (chunkTool.function?.arguments) {
-                        targetTool.function.arguments += chunkTool.function?.arguments
-                    }
-                })
-
-            } else {
-                //你还是第一个chunk,直接走赋值
-                resObj.tool_calls = delta.tool_calls;
-            }
-        } else {
-            res.write(`data:${JSON.stringify(resObj)} \n\n`)
-        }
-
-        // chunkList.push(chunk)
-    }
-
-
-    //for of循环结束，才会执行到下一行
-    // fs.writeFileSync("./chunkList.json", JSON.stringify(chunkList))
-    //每次回答，存到singleConvertList，保存上下文
-    singleConvertList.push(resObj);
-    writeConversation(conversationObj)
-    res.write(`data:${JSON.stringify({ done: true })} \n\n`)
-    res.end()
 });
 app.get("/conversation/create", async (req, res) => {
     const userId = req.query.userId;
@@ -130,9 +64,8 @@ app.get("/conversation/get", async (req, res) => {
     const userId = req.query.userId;
     const convertId = req.query.convertId;
     const conversationObj = readConversation();
-    const userAllConversation = conversationObj[userId];
-
-    const targetCOnversation = userAllConversation[convertId];
+    const userAllConversation = conversationObj[userId] || {};
+    const targetCOnversation = userAllConversation[convertId] || null;
     res.json({
         success: true,
         data: targetCOnversation,
@@ -142,7 +75,7 @@ app.get("/conversation/get", async (req, res) => {
 app.get("/conversation/list", async (req, res) => {
     const userId = req.query.userId;
     const conversationObj = readConversation();
-    const userAllConversation = conversationObj[userId];
+    const userAllConversation = conversationObj[userId] || {};
     //获取到所有的对话id
     const convertIdList = Object.keys(userAllConversation);
     const returnList = []
