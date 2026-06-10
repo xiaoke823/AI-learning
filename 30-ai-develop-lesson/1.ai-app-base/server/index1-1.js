@@ -1,4 +1,5 @@
 // 大模型接口
+import 'dotenv/config'
 import axios from "axios"
 
 axios.post("https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",{
@@ -11,7 +12,7 @@ axios.post("https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
     ]
 },{
     headers:{
-        "Authorization": "Bearer sk-d5b24677b0e24f0da678029127102586",
+        "Authorization": `Bearer ${process.env.API_KEY}`,
         "Content-Type": "application/json"
     }
 }).then(res=>{

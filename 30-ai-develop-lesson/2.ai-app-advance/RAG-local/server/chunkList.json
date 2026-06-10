@@ -1,0 +1,96 @@
+[
+    {
+        "model": "qwen-plus",
+        "id": "chatcmpl-0c300eb2-d81c-9a9a-9c46-d74f47021332",
+        "created": 1772951469,
+        "object": "chat.completion.chunk",
+        "usage": null,
+        "choices": [
+            {
+                "logprobs": null,
+                "index": 0,
+                "delta": {
+                    "content": "",
+                    "role": "assistant",
+                    "tool_calls": [
+                        {
+                            "index": 0,
+                            "id": "call_aa89fef52eee42af82b834",
+                            "type": "function",
+                            "function": {
+                                "name": "help_dp",
+                                "arguments": ""
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "model": "qwen-plus",
+        "id": "chatcmpl-0c300eb2-d81c-9a9a-9c46-d74f47021332",
+        "choices": [
+            {
+                "delta": {
+                    "content": "",
+                    "tool_calls": [
+                        {
+                            "index": 0,
+                            "id": "call_aa89fef52eee42af82b834",
+                            "type": "function",
+                            "function": {
+                                "name": "",
+                                "arguments": "{\"city\": \""
+                            }
+                        }
+                    ],
+                    "role": null
+                },
+                "index": 0
+            }
+        ],
+        "created": 1772951469,
+        "object": "chat.completion.chunk",
+        "usage": null
+    },
+    {
+        "model": "qwen-plus",
+        "id": "chatcmpl-0c300eb2-d81c-9a9a-9c46-d74f47021332",
+        "choices": [
+            {
+                "delta": {
+                    "tool_calls": [
+                        {
+                            "function": {
+                                "arguments": "北京\"}"
+                            },
+                            "index": 0,
+                            "id": "",
+                            "type": "function"
+                        }
+                    ],
+                    "content": ""
+                },
+                "index": 0
+            }
+        ],
+        "created": 1772951469,
+        "object": "chat.completion.chunk",
+        "usage": null
+    },
+    {
+        "model": "qwen-plus",
+        "id": "chatcmpl-0c300eb2-d81c-9a9a-9c46-d74f47021332",
+        "choices": [
+            {
+                "delta": {},
+                "index": 0,
+                "finish_reason": "tool_calls"
+            }
+        ],
+        "created": 1772951469,
+        "object": "chat.completion.chunk",
+        "usage": null
+    }
+]

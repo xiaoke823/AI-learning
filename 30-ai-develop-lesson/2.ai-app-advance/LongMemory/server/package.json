@@ -9,9 +9,12 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "type": "module",
   "dependencies": {
+    "@langchain/textsplitters": "^1.0.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "openai": "^6.16.0"
+    "openai": "^6.16.0",
+    "ruvector": "^0.2.12"
   }
 }

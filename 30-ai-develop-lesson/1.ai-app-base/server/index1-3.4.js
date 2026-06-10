@@ -1,6 +1,7 @@
 // 提示词优化+上下文优化
 
 //引入express-一个非常简单的node服务库
+import 'dotenv/config'
 import express from 'express'
 //cors-专门解决跨域问题的
 import cors from 'cors'
@@ -24,7 +25,7 @@ const messageList = [
 ]
 const openai = new OpenAI(
     {
-        apiKey: 'sk-d5b24677b0e24f0da678029127102586',
+        apiKey: process.env.API_KEY,
         baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
     }
 );

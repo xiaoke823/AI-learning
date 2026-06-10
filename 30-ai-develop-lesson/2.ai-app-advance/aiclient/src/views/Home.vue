@@ -1,7 +1,7 @@
 <script setup>
 import { nextTick, onMounted, ref, watch } from 'vue';
 import MarkDown from '../components/MarkDown.vue';
-import { createConversation, getConversation, requestLLM } from '../api';
+import { createConversation, getConversation, requestLLM } from '../api/index.js';
 import { useRoute, useRouter } from 'vue-router';
 import WmCard from '@/components/wmCard.vue';
 
@@ -13,7 +13,7 @@ const convertList = ref([]);
 const isThinking = ref(false);
 const test = ref("");
 function sendToLLM(word) {
-    console.log(word)
+
     isThinking.value = true;
     const _convertList = [...convertList.value];
     _convertList.push({
@@ -25,12 +25,12 @@ function sendToLLM(word) {
     requestLLM(word, '001', route.query.convertId, (event) => {
 
         const assistantObj = JSON.parse(event.data)
-        console.log('assistantObj',assistantObj)
+
         //空字符有id-=>你-》找到同id的对象替换-》你好-》找到同id的对象替换
         const _convertList = [...convertList.value];
         const convertIndex = _convertList.findIndex(item => {
-            if(item.id&&assistantObj.id&&item.id === assistantObj.id){
-                return true
+            if (item.id === assistantObj.id && assistantObj.id && item.id) {
+                return true;
             }
         });
         if (convertIndex !== -1) {
@@ -51,6 +51,9 @@ function createNew() {
     createConversation('001').then((res) => {
         router.push("/?convertId=" + res.data.data)
     })
+}
+function wmCardConfirm(id) {
+    requestLLM();
 }
 onMounted(() => {
     const { convertId } = route.query
@@ -86,20 +89,18 @@ watch(route, () => {
         <div class="chat-content">
             {{ test }}
             <div v-for="chatItem in convertList" class="chat-item">
-                <div v-if="chatItem.role === 'user' && chatItem.content!==''" class="user-content">
+                <div v-if="chatItem.role === 'user' && chatItem.content !== ''" class="user-content">
                     <MarkDown :content="chatItem.content">
                     </MarkDown>
                 </div>
-                <div v-if="chatItem.role === 'assistant'" class="assistant-content">
+                <div v-if="chatItem.role === 'assistant' && chatItem.content !== ''" class="assistant-content">
                     <MarkDown :content="chatItem.content">
                     </MarkDown>
                 </div>
-                <div v-if="chatItem.role === 'tool' && chatItem.cardName!==''" class="assistant-content">
-                    <WmCard
-                        @cardConfirm="sendToLLM"
-                        v-if="chatItem.cardName === 'wm_card'"
-                        :kind="chatItem.arguments.kind"
-                        :cardData="chatItem.arguments.data"></WmCard>
+                <div v-if="chatItem.role === 'tool' && chatItem.cardName !== ''" class="assistant-content">
+                    <WmCard @cardConfirm="sendToLLM" v-if="chatItem.cardName === 'wm_card'"
+                        :kind="chatItem.arguments.kind" :cardData="chatItem.arguments.data"></WmCard>
+
                 </div>
             </div>
             <div v-if="isThinking" class="chat-item">

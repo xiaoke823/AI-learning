@@ -1,5 +1,6 @@
 //搭建服务部分
 //引入express-一个非常简单的node服务库
+import 'dotenv/config'
 import express from 'express'
 //cors-专门解决跨域问题的
 import cors from 'cors'
@@ -71,7 +72,7 @@ const messageList=[
 //只需要在服务启动的时候new一次openai
 const openai = new OpenAI(
     {
-        apiKey: 'sk-d5b24677b0e24f0da678029127102586',
+        apiKey: process.env.API_KEY,
         baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
     }
 );

@@ -1,72 +1,43 @@
-// 回话管理
-
-//引入express-一个非常简单的node服务库
 import 'dotenv/config'
-import express from 'express'
+//引入express-一个非常简单的node服务库
+import express from "express";
 //cors-专门解决跨域问题的
-import cors from 'cors'
+import cors from "cors";
 //openai-专门用来按标准请求大模型接口的一个sdk库，
-import OpenAI from 'openai'
-import fs from 'fs'
-import {summaryMessage,readConversation,writeConversation,summaryTitle} from './utils.js'
+import OpenAI from "openai";
+import { readConversation, writeConversation, summaryTitle, requestAI, createRAGContext } from "./utils.js"
 //创建了一个express服务对象
 const app = express();
 
 //设置跨域
 app.use(cors())
-//同步读取
-const sytemContext = fs.readFileSync("./context.md")
-//转文本，否则是buffer
-const systemString = sytemContext.toString();
-// const messageList = [
-//     {
-//         role: "system",
-//         content: systemString
-//     }
-// ]
-const openai = new OpenAI(
-    {
-        apiKey: process.env.API_KEY,
-        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    }
-);
+//设置解析请求体，这样才能拿到req.body
+app.use(express.json())
+
+
+const openai = new OpenAI({
+    baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    apiKey: process.env.API_KEY
+})
 //到时候请求-localhost:3000/llm?keyword="用户输入的问题" 
-app.get("/llm", async (req, res) => {
-    const { keyword, userId, convertId } = req.query;
-    const conversationObj = readConversation();
-    const singleConvertList = conversationObj[userId][convertId].list;
+app.post("/llm", async (req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    });
+    const { keyword, userId, convertId } = req.body;
     const queryObj = {
         role: "user",
         content: keyword
     };
-    if (singleConvertList.length > 10) {
-        //算出来要截取多少条
-        //多截取一些，方便ai接口多给我们总结一下，所以设为6，每次大于10只保留6条。
-        const removeNum = singleConvertList.length - 6;
-        const removeList = singleConvertList.splice(1, removeNum)
-        const summaryRes = await summaryMessage(openai, removeList);
-        singleConvertList.splice(1, 0, summaryRes)
-    }
-    //每次提问，存到singleConvertList，保存上下文
-    singleConvertList.push(queryObj);
-    console.log(singleConvertList);
-    const llmres = await openai.chat.completions.create({
-        model: "gui-plus-2026-02-26",
-        messages: [
-            {
-                role: "system",
-                content: systemString
-            },
-            ...singleConvertList
-        ]
+    await requestAI({
+        openai,
+        userId,
+        convertId,
+        res,
+        queryObj
     })
-    //每次回答，存到singleConvertList，保存上下文
-    singleConvertList.push(llmres.choices[0].message);
-    writeConversation(conversationObj)
-    res.json({
-        success: true,
-        data: llmres.choices[0].message
-    });
 });
 app.get("/conversation/create", async (req, res) => {
     const userId = req.query.userId;
@@ -141,25 +112,7 @@ app.get("/conversation/list", async (req, res) => {
         message: "查询成功"
     })
 })
-app.get("/conversation/delete", async (req, res) => {
-    const userId = req.query.userId
-    const convertId = req.query.convertId
-    const conversationObj = readConversation()
-    const userAllConversation = conversationObj[userId]
-    if(!userAllConversation || !userAllConversation[convertId]) {
-        res.json({
-            success:false,
-            message:'对话不存在'
-        })
-        return
-    }
-    // 这一句就能删
-    delete userAllConversation[convertId]
-    writeConversation(conversationObj)
-    res.json({
-        success:true,
-        message:'删除成功'
-    })
-});
+
+
 //把服务开启来了开在了3000端口
 app.listen(3000)

@@ -1,14 +1,12 @@
 //引入express-一个非常简单的node服务库
-const express = require("express")
+import express from "express";
 //cors-专门解决跨域问题的
-const cors = require("cors")
+import cors from "cors";
 //openai-专门用来按标准请求大模型接口的一个sdk库，
-const OpenAI = require("openai")
+import OpenAI from "openai";
+import { readConversation, writeConversation, summaryTitle, requestAI, } from "./utils/utils.js"
 //创建了一个express服务对象
 const app = express();
-const fs = require("fs");
-const { toolList, toolHandleMap } = require("./tools.js")
-const { readConversation, writeConversation, summaryTitle, requestAI } = require("./utils.js");
 
 //设置跨域
 app.use(cors())
@@ -18,7 +16,7 @@ app.use(express.json())
 
 const openai = new OpenAI({
     baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    apiKey: 'sk-d5b24677b0e24f0da678029127102586'
+    apiKey: "sk-7d8dee72a49f49729567c1b08b4660b7"
 })
 //到时候请求-localhost:3000/llm?keyword="用户输入的问题" 
 app.post("/llm", async (req, res) => {
@@ -28,7 +26,6 @@ app.post("/llm", async (req, res) => {
         'Connection': 'keep-alive',
     });
     const { keyword, userId, convertId } = req.body;
-
     const queryObj = {
         role: "user",
         content: keyword
@@ -64,8 +61,9 @@ app.get("/conversation/get", async (req, res) => {
     const userId = req.query.userId;
     const convertId = req.query.convertId;
     const conversationObj = readConversation();
-    const userAllConversation = conversationObj[userId] || {};
-    const targetCOnversation = userAllConversation[convertId] || null;
+    const userAllConversation = conversationObj[userId];
+
+    const targetCOnversation = userAllConversation[convertId];
     res.json({
         success: true,
         data: targetCOnversation,
@@ -75,7 +73,7 @@ app.get("/conversation/get", async (req, res) => {
 app.get("/conversation/list", async (req, res) => {
     const userId = req.query.userId;
     const conversationObj = readConversation();
-    const userAllConversation = conversationObj[userId] || {};
+    const userAllConversation = conversationObj[userId];
     //获取到所有的对话id
     const convertIdList = Object.keys(userAllConversation);
     const returnList = []
@@ -114,65 +112,6 @@ app.get("/conversation/list", async (req, res) => {
     })
 })
 
-function dp() {
-    //真正的去做订票这个事情，是通过我们提前写好的代码实现的
-    console.log("订购成功")
-}
-app.get("/simple", async (req, res) => {
-    const { keyword } = req.query
-    const system2 = fs.readFileSync("./context2.md");
-    const systemString2 = system2.toString();
-    const llmres = await openai.chat.completions.create({
-        model: "gui-plus-2026-02-26",
-        messages: [
-            {
-                role: "system",
-                content: systemString2
-            },
-            {
-                role: "user",
-                content: keyword
-            }
-        ],
-        tools: toolList,
-        stream: true
-    })
 
-    let resObj = {
-        role: "assistant",
-        id: "",
-        content: ""
-    }
-
-    for await (let chunk of llmres) {
-        const delta = chunk.choices[0].delta
-        resObj.id = chunk.id
-        resObj.content += delta.content || ''
-        if (delta.tool_calls && delta.tool_calls.length > 0) {
-            //拼接tool_calls部分
-            if (resObj.tool_calls) {
-                //已经是第一个以后的chunk，走拼接
-                delta.tool_calls.forEach((chunkTool) => {
-                    const toolIndex = chunkTool.index;
-                    //根据index找到resObj，要拼接进去的对象
-                    const targetTool = resObj.tool_calls[toolIndex]
-                    if (chunkTool.function?.name) {
-                        targetTool.function.name += chunkTool.function?.name
-                    }
-                    if (chunkTool.function?.arguments) {
-                        targetTool.function.arguments += chunkTool.function?.arguments
-                    }
-                })
-
-            } else {
-                //你还是第一个chunk,直接走赋值
-                resObj.tool_calls = delta.tool_calls;
-            }
-        }
-    }
-    console.log(JSON.stringify(resObj))
-
-    res.end();
-})
 //把服务开启来了开在了3000端口
 app.listen(3000)
