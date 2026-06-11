@@ -1,0 +1,42 @@
+{
+    "tools": [
+        {
+            "name": "help_dp",
+            "description": "当用户需要订票的时候调用此工具",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "用户要去的城市"
+                    }
+                },
+                "required": [
+                    "city"
+                ]
+            }
+        }
+    ]
+}
+
+{
+    "tools": [
+        {
+            "name": "help_dp",
+            "description": "当用户需要订票的时候调用此工具",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "用户要去的城市"
+                    }
+                },
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "execution": {
+                "taskSupport": "forbidden"
+            }
+        }
+    ]
+}

@@ -1,0 +1,73 @@
+{
+    "001": {
+        "0011773750761899": {
+            "title": "",
+            "list": []
+        },
+        "0011773750765742": {
+            "title": "",
+            "list": [
+                {
+                    "role": "user",
+                    "content": "我要定一个去长沙的票"
+                },
+                {
+                    "role": "assistant",
+                    "id": "chatcmpl-53753ab9-c493-91a2-b8d7-8acc086d5682",
+                    "content": "",
+                    "tool_calls": [
+                        {
+                            "index": 0,
+                            "id": "call_47ade4bca5ca4fbda09dad",
+                            "type": "function",
+                            "function": {
+                                "name": "help_dp",
+                                "arguments": "{\"city\": \"长沙\"}"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "role": "tool",
+                    "content": "[{\"type\":\"text\",\"text\":\"去往长沙的票，订购成功\"}]",
+                    "id": "call_47ade4bca5ca4fbda09dad"
+                },
+                {
+                    "role": "assistant",
+                    "id": "chatcmpl-c703bcee-01d1-9a6d-aab8-ba1a3e3a4fb2",
+                    "content": "好的，去长沙的票已经成功订购！祝你旅途顺利～  \n\n另外提醒一下：你目前肠胃还比较敏感，长沙饮食偏辣，建议出发前备好清淡易消化的食物（比如粥、面条、蒸蛋等），也可随身带点益生菌或医生推荐的肠胃调理药物。需要我帮你查查长沙有哪些适合肠胃不适时吃的清淡餐厅，或者推荐些旅行肠胃护理小贴士吗？ 😊"
+                },
+                {
+                    "role": "user",
+                    "content": "帮我打开微信"
+                },
+                {
+                    "role": "assistant",
+                    "id": "chatcmpl-67d7f504-f921-9210-bfe5-d68322f5a5c8",
+                    "content": "",
+                    "tool_calls": [
+                        {
+                            "index": 0,
+                            "id": "call_5bfd201b10884493b45248",
+                            "type": "function",
+                            "function": {
+                                "name": "open_safe",
+                                "arguments": "{\"safeName\": \"微信\"}"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "role": "tool",
+                    "content": "[{\"type\":\"text\",\"text\":\"已经为你打开微信\"}]",
+                    "id": "call_5bfd201b10884493b45248"
+                },
+                {
+                    "role": "assistant",
+                    "id": "chatcmpl-84b4ceab-1445-917c-8ba2-3f75fe65e9ea",
+                    "content": "微信已成功打开！需要我帮你发个消息（比如向同事同步行程、或跟朋友约长沙接站），还是有其他操作想在微信里完成？随时告诉我～ 😊"
+                }
+            ]
+        }
+    }
+}

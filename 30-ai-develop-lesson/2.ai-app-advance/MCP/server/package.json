@@ -1,0 +1,22 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "@langchain/textsplitters": "^1.0.1",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "openai": "^6.16.0",
+    "ruvector": "^0.2.12",
+    "zod": "^4.3.6"
+  }
+}
