@@ -1,0 +1,49 @@
+{
+    "lc": 1,
+    "type": "constructor",
+    "id": [
+        "langchain_core",
+        "messages",
+        "AIMessage"
+    ],
+    "kwargs": {
+        "content": "你好！很高兴为你服务。有什么我可以帮你的吗？",
+        "additional_kwargs": {
+            "id": "021775745610420134a33f22921f0bc01c0430890f5ffa33f3594",
+            "type": "message",
+            "role": "assistant",
+            "model": "doubao-seed-2.0-code",
+            "stop_reason": "end_turn",
+            "usage": {
+                "input_tokens": 40,
+                "output_tokens": 16,
+                "cache_read_input_tokens": 0
+            }
+        },
+        "usage_metadata": {
+            "input_tokens": 40,
+            "output_tokens": 16,
+            "total_tokens": 56,
+            "input_token_details": {
+                "cache_creation": 0,
+                "cache_read": 0
+            }
+        },
+        "response_metadata": {
+            "id": "021775745610420134a33f22921f0bc01c0430890f5ffa33f3594",
+            "model": "doubao-seed-2.0-code",
+            "stop_reason": "end_turn",
+            "usage": {
+                "input_tokens": 40,
+                "output_tokens": 16,
+                "cache_read_input_tokens": 0
+            },
+            "type": "message",
+            "role": "assistant",
+            "model_provider": "anthropic"
+        },
+        "id": "021775745610420134a33f22921f0bc01c0430890f5ffa33f3594",
+        "tool_calls": [],
+        "invalid_tool_calls": []
+    }
+}

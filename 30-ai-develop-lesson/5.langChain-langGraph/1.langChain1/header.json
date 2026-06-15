@@ -1,0 +1,13 @@
+{
+  "accept": "application/json",
+  "authorization": "Bearer sk-7d8dee72a49f49729567c1b08b4660b7",
+  "content-type": "application/json",
+  "user-agent": "langchainjs-openai/1.0.0 ((node/v22.12.0; win32; x64))",
+  "x-stainless-arch": "x64",
+  "x-stainless-lang": "js",
+  "x-stainless-os": "Windows",
+  "x-stainless-package-version": "6.34.0",
+  "x-stainless-retry-count": "0",
+  "x-stainless-runtime": "node",
+  "x-stainless-runtime-version": "v22.12.0"
+}

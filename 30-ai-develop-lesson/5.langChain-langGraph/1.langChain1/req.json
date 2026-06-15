@@ -1,0 +1,1 @@
+{"model":"qwen-plus","stream":false,"messages":[{"role":"system","content":"你是一个聊天机器人"},{"role":"user","content":"你好"},{"role":"user","content":[{"type":"text","text":"你是人吗，我是人吗，我到底是不是人啊"},{"type":"image_url","image_url":"data:image/png;base64,/9j/4AAQS"}]}]}
