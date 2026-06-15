@@ -5,18 +5,18 @@ import { RunnableWithMessageHistory } from "@langchain/core/runnables";
 import { ChatMessageHistory } from "@langchain/community/stores/message/in_memory";
 
 import { getUserHistory, writeUserHistory } from "./utils/index.js"
+import { MyHistory } from "./MyHistory.js";
 
 const app = express();
 
 //准备一个数组来储存对话记录
-// let history = new ChatMessageHistory()
+// let history = new MyHistory()
 app.get("/llm", async (req, res) => {
     //获取用户体的问题
     const { q, userId, sessionId } = req.query;
-    //获取历史纪录
-    const historyArr = getUserHistory(userId,sessionId)
     //本身拿到的是数组，需要转化
-    let history = new ChatMessageHistory(historyArr)
+    let history = new MyHistory(userId,sessionId)
+    
     //构建链条
     const chain = getUserChatChain()
     // histoory
@@ -35,9 +35,6 @@ app.get("/llm", async (req, res) => {
     },{
         configurable:{sessionId:'default'}
     });
-    // console.log(result);
-    // console.log(history.getMessages())
-    writeUserHistory(userId,sessionId,history.messages)
     //返回给前端
     res.send(result);
 });
