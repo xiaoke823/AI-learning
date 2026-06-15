@@ -2,7 +2,7 @@ import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts
 import { ChatOpenAI } from "@langchain/openai";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { customCalc } from "../tools.js";
-export function getUserChatChain(type = 'human') {
+export function getUserChatChain(extraTool, type = 'human') {
     //构建消息模板
     const prompt = type === 'human' ?
         ChatPromptTemplate.fromMessages([
@@ -23,7 +23,7 @@ export function getUserChatChain(type = 'human') {
             baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
         }
     })
-    const modelWithTool = model.bindTools([customCalc])
+    const modelWithTool = model.bindTools([...extraTool,customCalc])
     //构建链条
     const chain = prompt.pipe(modelWithTool);
     return chain;

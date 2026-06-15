@@ -5,17 +5,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "type": "module",
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@langchain/anthropic": "^1.3.26",
+    "@lancedb/lancedb": "^0.19.1",
+    "@langchain/classic": "^1.0.31",
     "@langchain/community": "^1.1.27",
     "@langchain/core": "^1.1.39",
-    "@langchain/mcp-adapters": "^1.1.3",
-    "@langchain/openai": "^1.4.3",
-    "express": "^5.2.1"
-  }
+    "@langchain/openai": "^1.4.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
