@@ -6,10 +6,10 @@ import { mapChatMessagesToStoredMessages } from "@langchain/core/messages";
 import fs from "fs";
 //1，准备好大模型
 const model = new ChatOpenAI({
-    modelName: "doubao-seed-2.0-code",
-    apiKey: "828546c2-8580-4a30-ab64-8ddddd5986ca",
+    modelName: "qwen-plus",
+    apiKey: "sk-7d8dee72a49f49729567c1b08b4660b7",
     configuration: {
-        baseURL: "https://ark.cn-beijing.volces.com/api/coding/v3"
+        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     }
 })
 
