@@ -1,0 +1,5 @@
+{
+  "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "apiKey": "sk-7d8dee72a49f49729567c1b08b4660b7",
+  "model": "qwen3.6-plus-2026-04-02"
+}
