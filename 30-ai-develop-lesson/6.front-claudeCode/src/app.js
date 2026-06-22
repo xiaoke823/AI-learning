@@ -12,7 +12,7 @@ import { buildContext } from './files/index.js' // @ 文件上下文解析
 import { readSystem, getUserContext, readRules, getSkillHeaders } from './utils/contextRead.js' // 读取系统提示词与用户上下文模板并填充运行时信息
 import { getMatchedRules } from './utils/rulesMatch.js' // 根据 @ 文件匹配 .front-claude/rules 规则
 import path from 'node:path'
-import { toolList, toolMap } from './tool/index.js' // 本地 function tool：随请求带给大模型，模型可按需调用
+import toolResult from './tool/index.js' // 工具能力（本地 function tool + MCP，已归一化）：整体交给 model.js，由它转格式并执行
 
 // 对话历史，后续接入大模型时作为上下文传入接口
 const messages = []
@@ -44,8 +44,8 @@ async function chat(userInput) {
     const spinner = ora({ text: 'AI 正在思考...', discardStdin: false }).start()
     try {
         // 请求大模型：system 上下文在前；用户上下文作为 user 级单独传入（临时拼接，不写入 messages，故不会被保存进对话记录）
-        // 带上本地 function tool(tools)，模型可在需要时调用，由 toolMap 执行并把结果回传后再继续生成
-        const reply = await chatWithModel(buildRequestMessages(), { tools: toolList, toolMap })
+        // 带上归一化后的工具集（toolResult），模型可在需要时调用，由 model.js 转格式并通过 excuteTool 执行后继续生成
+        const reply = await chatWithModel(buildRequestMessages(), { toolResult })
         // 记录助手回复，作为下一轮的上下文
         messages.push({ role: 'assistant', content: reply })
         spinner.stop()
