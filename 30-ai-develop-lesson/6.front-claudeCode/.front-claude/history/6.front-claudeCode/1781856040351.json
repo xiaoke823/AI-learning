@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "【参考资料：以下为用户通过 @ 附加的文件】\n--- 文件：claude.md ---\n# 项目介绍\r\n本项目是一个AI终端应用项目，该项目运行后可在终端启动。辅助用户进行开发，类似于claude code\r\n\r\n# 项目技术栈\r\n使用nodejs配合node的一些库进行开发，请求大模型接口用的是openai SDK库。项目开发使用js，不使用ts\r\n\r\n# 项目的目录结构\r\n[./src](\"项目的代码存放处\")\r\n[./src/app.js](\"项目的启动文件，通过运行该文件启动项目\")\r\n[./src/docs](\"项目携带给大模型接口的文档模板放在这里\")\r\n[./src/tool](\"项目的本地functionTool到时候读取tools里的内容给到大模型接口\")\r\n[./src/utils](\"项目代码里用到的一些工具函数存放处\")\r\n\r\n# 项目的额外规范\r\n1. 项目使用的是esmodule规范。\r\n2. 项目使用的是js，不是ts。\r\n3. 注意扫描package.json，如果有没有安装的包，请运行npm install安装\r\n\r\n# 对话规范\r\n请使用中文与我对话\n--- 文件结束 ---\n\n你能看到这个吗"
+  },
+  {
+    "role": "assistant",
+    "content": "可以看到。我已经完整读取并记录了 `claude.md` 中的项目信息，包括：\n- **项目定位**：终端运行的 AI 开发辅助工具（类似 Claude Code）\n- **技术栈**：Node.js + OpenAI SDK，纯 JavaScript + ES Module 规范\n- **目录结构**：`src/app.js`（入口）、`src/docs`（提示词/文档模板）、`src/tool`（本地 Function Tool）、`src/utils`（工具函数）\n- **开发规范**：不使用 TS，需按需检查并安装 `package.json` 依赖，全程使用中文沟通\n\n我已准备好严格遵循上述规范为您编写代码、设计架构或排查问题。请随时告诉我下一步需要实现的功能或当前遇到的具体需求。"
+  }
+]

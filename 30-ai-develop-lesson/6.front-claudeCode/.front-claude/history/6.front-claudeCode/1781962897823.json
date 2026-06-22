@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "使用一下mygit-skills"
+  },
+  {
+    "role": "assistant",
+    "content": "已加载 `mygit-skills`。在后续的 Git 操作中，我将严格遵循以下规范：\n\n1.  **添加文件**：执行 `git add .`。\n2.  **提交代码**：根据变更内容生成符合 `fix/feat/debugger: 文本` 格式的理由，并执行 `git commit`。\n3.  **推送代码**：将代码推送到当前分支（若是 `main`/`master` 则推送至同名远端分支，否则推送至同名远端分支）。\n4.  **记录日志**：将提交理由按 `YYYY:MM:DD HH:mm 用户名：提交理由` 格式追加至 `readme.md`。\n\n请提供具体的开发任务或指示我进行提交。"
+  }
+]

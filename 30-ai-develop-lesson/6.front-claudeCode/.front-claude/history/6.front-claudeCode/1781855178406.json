@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "nihao"
+  },
+  {
+    "role": "assistant",
+    "content": "Nǐ hǎo! (你好！) 👋 How can I help you today?"
+  }
+]
