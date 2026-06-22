@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { getUserHomeDir, getCurrentWorkingDir } from '../../utils/pathUtils.js'
+import { getUserHomeDir, getCurrentDir } from '../../utils/pathUtils.js'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
@@ -8,12 +8,12 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 
 /**
  * 获取MCP配置
- * 从用户目录和项目目录读取 .front/settings.json 配置文件并合并
+ * 从用户目录和项目目录读取 .front-claude/settings.json 配置文件并合并
  * @returns {Array} 合并后的MCP服务器配置数组
  */
 export function getMcpConfig() {
     const readConfig = (dir) => {
-        const configPath = path.join(dir, '.front', 'settings.json')
+        const configPath = path.join(dir, '.front-claude', 'settings.json')
         try {
             if (fs.existsSync(configPath)) {
                 const content = fs.readFileSync(configPath, 'utf-8')
@@ -26,7 +26,7 @@ export function getMcpConfig() {
     }
 
     const userConfig = readConfig(getUserHomeDir())
-    const projectConfig = readConfig(getCurrentWorkingDir())
+    const projectConfig = readConfig(getCurrentDir())
 
     // 合并配置，项目配置优先覆盖用户配置
     const mergedConfig = { ...userConfig, ...projectConfig }
@@ -105,6 +105,7 @@ export async function linkMcpAndListTool(targetList, targetMap) {
 
         } catch (error) {
             // 单个服务连接失败不中断，继续连接下一个
+            console.log('连接失败',error)
         }
     }
 

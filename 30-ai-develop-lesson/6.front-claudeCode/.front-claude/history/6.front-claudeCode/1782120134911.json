@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "我的ip是多少"
+  },
+  {
+    "role": "assistant",
+    "content": "你的公网 IP 地址是：**117.134.3.178**"
+  }
+]

@@ -3,7 +3,7 @@
   "apiKey": "sk-7d8dee72a49f49729567c1b08b4660b7",
   "model": "qwen3.6-plus-2026-04-02",
   "mcpServer": {
-      "AliyunBailianMCP_code_interpreter_mcp": {
+      "code_interpreter_mcp": {
         "type": "http",
         "url": "https://dashscope.aliyuncs.com/api/v1/mcps/code_interpreter_mcp/mcp",
         "headers": {

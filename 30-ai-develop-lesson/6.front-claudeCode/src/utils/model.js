@@ -2,8 +2,9 @@
 //配置来源：当前终端目录下的 .front-claude/settings.json（首次使用会交互式引导填写）
 import OpenAI from 'openai'
 import { readSettings } from './settings.js'
-import { transformToOpenAi } from '../tool/util.js' // 工具定义格式转换：MCP → OpenAI（适配在请求层完成，app.js 无需关心）
-import { excuteTool } from '../tool/index.js' // 统一工具执行入口：本地与 MCP 归一化后都走这里
+import { transformToOpenAi } from '../tools/util.js' // 工具定义格式转换：MCP → OpenAI（适配在请求层完成，app.js 无需关心）
+import { excuteTool } from '../tools/index.js' // 统一工具执行入口：本地与 MCP 归一化后都走这里
+import logger from './logger.js' // 带颜色的终端输出：用于工具执行过程等提示
 
 /**
  * 创建 OpenAI 客户端实例的工厂方法，配置从 .front-claude/settings.json 读取
@@ -47,6 +48,8 @@ export async function chatWithModel(messages, options = {}) {
         // 模型请求调用工具：先把含 tool_calls 的助手消息并入历史（OpenAI 要求 tool 结果消息前必须有对应的助手消息），再逐个执行工具并把结果作为 tool 消息回传
         messages.push(message)
         for (const call of message.tool_calls) {
+            // 通知用户即将执行工具，避免工具调用期间终端完全静默
+            logger.log(`开始执行工具：${call.function.name}`, 'green')
             let result
             try {
                 const args = JSON.parse(call.function.arguments || '{}')

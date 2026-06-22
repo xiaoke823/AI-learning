@@ -12,7 +12,7 @@ import { buildContext } from './files/index.js' // @ 文件上下文解析
 import { readSystem, getUserContext, readRules, getSkillHeaders } from './utils/contextRead.js' // 读取系统提示词与用户上下文模板并填充运行时信息
 import { getMatchedRules } from './utils/rulesMatch.js' // 根据 @ 文件匹配 .front-claude/rules 规则
 import path from 'node:path'
-import toolResult from './tool/index.js' // 工具能力（本地 function tool + MCP，已归一化）：整体交给 model.js，由它转格式并执行
+import toolResult, { ready as toolsReady } from './tools/index.js' // 工具能力（本地 function tool + MCP，已归一化）：整体交给 model.js，由它转格式并执行；ready 用于等待 MCP 连接完成
 
 // 对话历史，后续接入大模型时作为上下文传入接口
 const messages = []
@@ -97,6 +97,8 @@ async function main() {
     // 首次使用时会引导输入「接口地址 / API Key / 模型名称」，配置写入当前目录的 .front-claude/settings.json；
     // 后续启动直接从该文件读取。注意：配置读取基于「当前终端目录」(process.cwd)。
     await ensureSettings()
+    // 等待所有 MCP 服务连接完成，确保 tools 列表已就绪后再进入交互界面
+    await toolsReady()
 
     const box = new InputBox()
     box.onSubmit = async (line) => {
