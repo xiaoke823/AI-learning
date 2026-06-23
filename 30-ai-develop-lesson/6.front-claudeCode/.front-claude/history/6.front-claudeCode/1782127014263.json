@@ -1,0 +1,26 @@
+[
+  {
+    "role": "user",
+    "content": "帮我写一个数组累加工具"
+  },
+  {
+    "role": "assistant",
+    "content": "已创建 `src/utils/arrayUtils.js`，提供以下功能：\n\n```js\nimport { sum, sumWithInitial } from './utils/arrayUtils.js'\n\n// 基础用法 - 数字数组累加\nsum([1, 2, 3, 4]) // 10\n\n// 对象数组 - 按属性累加\nsum([{ price: 10 }, { price: 20 }], 'price') // 30\n\n// 自定义函数累加\nsum([1, 2, 3], (n) => n * 2) // 12\n\n// 带初始值\nsumWithInitial([1, 2, 3], 100) // 106\n```"
+  },
+  {
+    "role": "user",
+    "content": "再写一个数组筛选方法，写入前必须要我确认"
+  },
+  {
+    "role": "assistant",
+    "content": "我为您编写了一个灵活的 `filterBy` 方法，支持函数回调、对象浅匹配和基本值匹配。\n\n**代码内容如下：**\n\n```javascript\n/**\n * 高级数组筛选工具\n * @param {Array} arr - 目标数组\n * @param {Function|Object|*} query - 筛选条件\n *   - 函数: 执行回调函数 (item, index, array) => boolean\n *   - 对象: 浅匹配，筛选包含该对象所有键值对的元素\n *   - 基本类型: 全等匹配 (===)\n * @param {string} [propName] - 当 query 为基本类型时，指定匹配对象的属性名\n * @returns {Array} 筛选后的新数组\n */\nexport function filterBy(arr, query, propName) {\n    if (!Array.isArray(arr)) return []\n\n    return arr.filter(item => {\n        // 1. 函数回调\n        if (typeof query === 'function') {\n            return query(item)\n        }\n\n        // 2. 对象浅匹配 (类似 _.matches)\n        if (typeof query === 'object' && query !== null) {\n            if (typeof item !== 'object' || item === null) return false\n            const keys = Object.keys(query)\n            if (keys.length === 0) return true // 空对象匹配所有\n            return keys.every(key => item[key] === query[key])\n        }\n\n        // 3. 基本类型匹配\n        if (propName) {\n            return item != null && item[propName] === query\n        }\n        return item === query\n    })\n}\n```\n\n是否允许我将此代码追加到 `src/utils/arrayUtils.js` 文件中？"
+  },
+  {
+    "role": "user",
+    "content": "好的"
+  },
+  {
+    "role": "assistant",
+    "content": "已将 `filterBy` 函数成功追加到 `src/utils/arrayUtils.js` 文件中。\n\n该函数支持：\n1. **函数回调**：`filterBy(arr, item => item > 2)`\n2. **对象匹配**：`filterBy(users, { age: 18 })`\n3. **属性匹配**：`filterBy(items, 'active', true)` 或 `filterBy(ids, 5)`"
+  }
+]

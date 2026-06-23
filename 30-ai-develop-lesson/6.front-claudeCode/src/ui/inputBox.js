@@ -64,6 +64,13 @@ export class InputBox {
 
   resume() {
     this.paused = false
+    // 交互式工具（confirm/select）结束时，@inquirer/core 会调用 rl.close()，它把 stdin 的
+    // raw 模式关掉并暂停 stdin（pause）。若不在此恢复，按键将无法触发 keypress，表现为
+    // 「提示符画出来了但敲不出字」。重新 resume 流 + 打开 raw 模式即可重新接管输入。
+    if (process.stdin.isTTY) {
+      process.stdin.resume()
+      process.stdin.setRawMode(true)
+    }
     // AI 回复已打印多行，从新的一行重新画提示符，不依赖旧的 lastRows
     process.stdout.write('\n')
     this.lastRows = 0

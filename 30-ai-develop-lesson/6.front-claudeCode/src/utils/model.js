@@ -23,7 +23,7 @@ export function createClient() {
  * 支持函数工具(function calling)：传入 toolResult 时，自动把其中的工具定义转成 OpenAI 格式随请求发送，
  * 模型请求调用工具时统一通过 excuteTool 执行并把结果回传，循环直到模型给出最终文本
  * @param {Array<{role: string, content: string}>} messages 对话历史（工具调用过程中的中间消息会追加到此数组，但不会写入外部对话历史）
- * @param {{toolResult?:{tools:Array<object>}}} [options] 工具配置：toolResult 为归一化后的工具模块（默认导出 { tools, toolNameMap }），由本函数负责转格式与执行
+ * @param {{toolResult?:{tools:Array<object>}, onToolStart?:(name:string)=>void, onToolEnd?:(name:string)=>void}} [options] 工具配置：toolResult 为归一化后的工具模块（默认导出 { tools, toolNameMap }），由本函数负责转格式与执行；onToolStart/onToolEnd 在每个工具执行前后回调，供调用方暂停/恢复外部加载动画（如 ora spinner），避免它与交互式工具（confirm/select）或工具自身输出抢占终端
  * @returns {Promise<string>} 模型回复内容
  */
 export async function chatWithModel(messages, options = {}) {
@@ -48,6 +48,8 @@ export async function chatWithModel(messages, options = {}) {
         // 模型请求调用工具：先把含 tool_calls 的助手消息并入历史（OpenAI 要求 tool 结果消息前必须有对应的助手消息），再逐个执行工具并把结果作为 tool 消息回传
         messages.push(message)
         for (const call of message.tool_calls) {
+            // 先暂停外部加载动画（如 ora spinner）再打印日志：否则 spinner 仍会持续重绘，覆盖日志行
+            options.onToolStart?.(call.function.name)
             // 通知用户即将执行工具，避免工具调用期间终端完全静默
             logger.log(`开始执行工具：${call.function.name}`, 'green')
             let result
@@ -57,6 +59,9 @@ export async function chatWithModel(messages, options = {}) {
                 result = await excuteTool(call.function.name, args)
             } catch (err) {
                 result = `工具执行出错：${err.message}`
+            } finally {
+                // 工具执行完毕恢复加载动画，继续等待模型下一轮生成
+                options.onToolEnd?.(call.function.name)
             }
             messages.push({ role: 'tool', tool_call_id: call.id, content: String(result) })
         }

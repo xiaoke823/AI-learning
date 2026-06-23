@@ -8,9 +8,9 @@ import write_file from './write_file.js';
 import glob from './glob.js';
 import confirm from './confirm.js';
 import select from './select.js';
-console.log(await glob.handle({
-    pattern: "src/tools/local/*.js",
-}))
+// console.log(await glob.handle({
+//     pattern: "src/tools/local/*.js",
+// }))
 export default function getLocalTool() {
     const localClient = new LocalClient();
     localClient.registerTool(skill);

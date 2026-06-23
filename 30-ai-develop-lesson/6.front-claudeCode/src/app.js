@@ -45,7 +45,13 @@ async function chat(userInput) {
     try {
         // 请求大模型：system 上下文在前；用户上下文作为 user 级单独传入（临时拼接，不写入 messages，故不会被保存进对话记录）
         // 带上归一化后的工具集（toolResult），模型可在需要时调用，由 model.js 转格式并通过 excuteTool 执行后继续生成
-        const reply = await chatWithModel(buildRequestMessages(), { toolResult })
+        // onToolStart/onToolEnd：工具执行期间暂停 spinner。交互式工具(confirm/select)需要独占终端接收按键，
+        // 普通工具(bash/glob)自身也有输出；若不暂停 spinner，它会持续重绘抢占同一行，表现为「卡在 AI 正在思考」
+        const reply = await chatWithModel(buildRequestMessages(), {
+            toolResult,
+            onToolStart: () => spinner.stop(),
+            onToolEnd: () => spinner.start(),
+        })
         // 记录助手回复，作为下一轮的上下文
         messages.push({ role: 'assistant', content: reply })
         spinner.stop()
