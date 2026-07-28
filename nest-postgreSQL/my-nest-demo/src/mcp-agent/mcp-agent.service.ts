@@ -31,7 +31,10 @@ export class McpAgentService implements OnModuleInit, OnModuleDestroy {
                 // 自定义的本地 MCP Server（stdio 模式）
                 'local-tools': {
                     transport: 'stdio',
-                    command: 'ts-node',
+                    // 用 tsx 而不是 ts-node：Prisma 7 生成的 client.ts 在 moduleResolution=nodenext 下
+                    // 用 .js 扩展名导入（指向 .ts 源文件），ts-node 的 CJS require 无法解析，
+                    // 会报 "Cannot find module './internal/class.js'"。tsx 能正确解析 .js→.ts。
+                    command: 'tsx',
                     args: ['src/mcp-server/server.ts'],
                     env: { ...process.env } as Record<string, string>,
                 },
